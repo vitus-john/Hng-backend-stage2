@@ -4,5 +4,17 @@ module.exports = {
   angola: "AO",
   ghana: "GH",
   benin: "BJ",
-  south_africa: "ZA"
+  "south africa": "ZA",
+  uganda: "UG",
+  rwanda: "RW",
+  zambia: "ZM",
+  tanzania: "TZ",
+  ethiopia: "ET",
+  egypt: "EG",
+  cameroon: "CM",
+  senegal: "SN",
+  togo: "TG",
+  ivorycoast: "CI",
+  "ivory coast": "CI",
+  cote: "CI",
 };

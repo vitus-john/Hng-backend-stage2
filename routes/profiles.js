@@ -1,7 +1,7 @@
 const express = require("express");
 
 const limiter = require("../middlewares/rateLimiter");
-const controller = require("../controllers/profile.controller");
+const controller = require("../controllers/profiles");
 
 const router = express.Router();
 

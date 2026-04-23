@@ -1,93 +1,93 @@
-const prisma = require("../config/db");
-const { buildQuery } = require("../services/queryBuilder.service");
-const { parseQuery } = require("../services/nlpParser.service");
-const { ALLOWED_SORT, ALLOWED_ORDER } = require("../utils/constants");
-
-const { validateQuery } = require("../utils/validation");
+const prisma = require("../config/db_conn");
+const { buildQuery } = require("../services/queryBuilder");
+const { parseQuery } = require("../services/nlpParser");
+const { validateListQuery, validateSearchQuery } = require("../utils/validation");
 
 exports.getProfiles = async (req, res) => {
   try {
-    const errorField = validateQuery(req.query);
-    if (errorField) {
-      return res.status(422).json({
+    const validation = validateListQuery(req.query);
+    if (!validation.ok) {
+      return res.status(validation.status).json({
         status: "error",
-        message: "Invalid parameter type"
+        message: validation.message,
       });
     }
 
-    const {
-      sort_by = "created_at",
-      order = "desc",
-      page = 1,
-      limit = 10,
-      ...filters
-    } = req.query;
-
-    if (!ALLOWED_SORT.includes(sort_by) || !ALLOWED_ORDER.includes(order)) {
-      return res.status(400).json({
-        status: "error",
-        message: "Invalid query parameters"
-      });
-    }
-
-    const take = Math.min(Number(limit), 50);
-    const skip = (Number(page) - 1) * take;
-
+    const { sort_by, order, page, limit, filters } = validation.value;
     const where = buildQuery(filters);
+    const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
       prisma.profile.findMany({
         where,
         orderBy: { [sort_by]: order },
         skip,
-        take
+        take: limit,
       }),
-      prisma.profile.count({ where })
+      prisma.profile.count({ where }),
     ]);
 
     return res.json({
       status: "success",
-      page: Number(page),
-      limit: take,
+      page,
+      limit,
       total,
-      data
+      data,
     });
-
   } catch (err) {
+    console.error(err);
     return res.status(500).json({
       status: "error",
-      message: "Server failure"
+      message: "Server failure",
     });
   }
 };
 
 exports.searchProfiles = async (req, res) => {
-  const { q, page = 1, limit = 10 } = req.query;
+  try {
+    const validation = validateSearchQuery(req.query);
+    if (!validation.ok) {
+      return res.status(validation.status).json({
+        status: "error",
+        message: validation.message,
+      });
+    }
 
-  const parsed = parseQuery(q);
+    const { q, page, limit } = validation.value;
+    const parsed = parseQuery(q);
 
-  if (!parsed) {
-    return res.status(400).json({
+    if (!parsed) {
+      return res.status(400).json({
+        status: "error",
+        message: "Unable to interpret query",
+      });
+    }
+
+    const where = buildQuery(parsed);
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      prisma.profile.findMany({
+        where,
+        orderBy: { created_at: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.profile.count({ where }),
+    ]);
+
+    return res.json({
+      status: "success",
+      page,
+      limit,
+      total,
+      data,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
       status: "error",
-      message: "Unable to interpret query"
+      message: "Server failure",
     });
   }
-
-  const take = Math.min(parseInt(limit), 50);
-  const skip = (page - 1) * take;
-
-  const where = buildQuery(parsed);
-
-  const [data, total] = await Promise.all([
-    prisma.profile.findMany({ where, skip, take }),
-    prisma.profile.count({ where })
-  ]);
-
-  res.json({
-    status: "success",
-    page: Number(page),
-    limit: take,
-    total,
-    data
-  });
 };
