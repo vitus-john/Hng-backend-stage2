@@ -182,9 +182,7 @@ npx prisma db push
 
 1. Add the provided 2026 dataset file at:
 
-`data/profiles-2026.json`
-
-The seed script also supports `data/seed_profiles.json` as a fallback.
+`data/seed_profiles.json`
 
 Supported JSON shapes:
 
