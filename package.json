@@ -9,7 +9,7 @@
     "seed": "node prisma/seed.js"
   },
   "dependencies": {
-    "@prisma/client": "^7.8.0",
+    "@prisma/client": "^6.19.3",
     "axios": "^1.15.0",
     "cors": "^2.8.6",
     "express": "^4.22.1",

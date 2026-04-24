@@ -166,23 +166,30 @@ Implemented status behavior:
 npm install
 ```
 
-2. Add environment variables in `.env`:
+1. Add environment variables in `.env`:
 
 ```env
 PORT=5000
 DATABASE_URL="postgresql://<user>:<password>@<host>:5432/<db>?schema=public"
 ```
 
-3. Generate Prisma client and apply schema:
+1. Generate Prisma client and apply schema:
 
 ```bash
 npm run prisma:generate
 npx prisma db push
 ```
 
-4. Add the provided 2026 dataset file at:
+1. Add the provided 2026 dataset file at:
 
 `data/profiles-2026.json`
+
+The seed script also supports `data/seed_profiles.json` as a fallback.
+
+Supported JSON shapes:
+
+- Top-level array: `[{ ...profile }]`
+- Wrapped object: `{ "profiles": [{ ...profile }] }`
 
 Or set a custom path:
 
@@ -190,7 +197,7 @@ Or set a custom path:
 SEED_FILE="D:/path/to/profiles-2026.json"
 ```
 
-5. Seed data:
+1. Seed data:
 
 ```bash
 npm run seed
@@ -198,7 +205,7 @@ npm run seed
 
 Re-running seed will not duplicate records due to unique `name` and `skipDuplicates`.
 
-6. Start server:
+1. Start server:
 
 ```bash
 npm run dev
