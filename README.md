@@ -2,6 +2,8 @@
 
 Profile Intelligence Query Engine built with Node.js, Express, Prisma, and PostgreSQL.
 
+[hng-backend-stage2-weld.vercel.app](https://hng-backend-stage2-weld.vercel.app/api/profiles)
+
 ## Features
 
 - Advanced filtering, sorting, and pagination on `GET /api/profiles`
